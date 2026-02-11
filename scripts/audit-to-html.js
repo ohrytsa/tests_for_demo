@@ -1,8 +1,3 @@
-/**
- * Script to convert npm audit JSON report to HTML format
- * Integrates dependency audit with linter reports
- */
-
 const fs = require("fs");
 const path = require("path");
 
@@ -164,14 +159,11 @@ function generateHTML(auditData) {
   `;
 }
 
-// Main execution
 try {
-  // Ensure reports directory exists
   if (!fs.existsSync(REPORTS_DIR)) {
     fs.mkdirSync(REPORTS_DIR, { recursive: true });
   }
 
-  // Read audit JSON
   if (!fs.existsSync(AUDIT_JSON)) {
     console.error("Audit JSON file not found. Run 'npm run audit:deps' first.");
     process.exit(1);
