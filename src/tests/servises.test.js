@@ -1,4 +1,4 @@
-import { FetchData } from "./servises";
+import { FetchData } from "../utils/servises";
 
 global.fetch = require("jest-fetch-mock");
 
@@ -29,20 +29,12 @@ describe("FetchData", () => {
   it("returns error after failed request with 404", async () => {
     fetch.mockResponseOnce("", { status: 404 });
 
-    try {
-      await FetchData();
-    } catch (error) {
-      expect(error.message).toBe("Failed to fetch data");
-    }
+    await expect(FetchData()).rejects.toThrow("Failed to fetch data");
   });
 
   it("returns error after failed request with Network error", async () => {
     fetch.mockRejectOnce(new Error("Network error"));
 
-    try {
-      await FetchData();
-    } catch (error) {
-      expect(error.message).toBe("Failed to fetch data");
-    }
+    await expect(FetchData()).rejects.toThrow("Failed to fetch data");
   });
 });

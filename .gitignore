@@ -8,6 +8,10 @@
 # testing
 /coverage
 
+# reports (generated files)
+/reports/*.json
+/reports/*.html
+
 # production
 /build
 

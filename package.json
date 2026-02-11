@@ -6,16 +6,31 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
     "cra-template": "1.2.0",
+    "mathjs": "^15.1.1",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "react-scripts": "5.0.1"
+    "react-router-dom@6": "^6.14.1",
+    "react-scripts": "5.0.1",
+    "run": "^1.5.0",
+    "start": "^5.1.0"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "test:coverage": "react-scripts test --coverage",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "eslint src/ --ext .js,.jsx",
+    "lint:fix": "eslint src/ --ext .js,.jsx --fix",
+    "lint:report": "eslint src/ --ext .js,.jsx --format json --output-file reports/eslint-report.json || true",
+    "lint:report:html": "eslint src/ --ext .js,.jsx --format html --output-file reports/eslint-report.html || true",
+    "format": "prettier --write \"src/**/*.{js,jsx,json,css}\"",
+    "format:check": "prettier --check \"src/**/*.{js,jsx,json,css}\"",
+    "audit:deps": "npm audit --json > reports/audit-report.json || true",
+    "audit:deps:html": "npm audit --json > reports/audit-report.json && node scripts/audit-to-html.js || true",
+    "quality": "npm run lint:report && npm run audit:deps",
+    "quality:full": "npm run lint:report:html && npm run audit:deps:html && npm run test:coverage",
+    "prepare": "husky"
   },
   "eslintConfig": {
     "extends": [
@@ -36,6 +51,20 @@
     ]
   },
   "devDependencies": {
-    "jest-fetch-mock": "^3.0.3"
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "eslint-config-prettier": "^10.1.8",
+    "husky": "^9.1.7",
+    "jest-fetch-mock": "^3.0.3",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.8.1"
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "src/**/*.{json,css}": [
+      "prettier --write"
+    ]
   }
 }

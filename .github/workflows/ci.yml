@@ -1,0 +1,109 @@
+name: CI - Lint, Test & Quality
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+
+jobs:
+  quality:
+    name: Code Quality & Linting
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create reports directory
+        run: mkdir -p reports
+
+      - name: Run ESLint with JSON report
+        run: npm run lint:report
+        continue-on-error: true
+
+      - name: Run ESLint with HTML report
+        run: npm run lint:report:html
+        continue-on-error: true
+
+      - name: Check formatting
+        run: npm run format:check
+        continue-on-error: true
+
+      - name: Run dependency audit
+        run: npm run audit:deps
+        continue-on-error: true
+
+      - name: Upload linting artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-reports
+          path: reports/
+          retention-days: 30
+
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: quality
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests with coverage
+        run: npm run test:coverage -- --watchAll=false --ci
+        env:
+          CI: true
+
+      - name: Upload coverage artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 30
+
+  build:
+    name: Build Application
+    runs-on: ubuntu-latest
+    needs: [quality, test]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: build/
+          retention-days: 7
